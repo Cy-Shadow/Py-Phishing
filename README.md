@@ -115,8 +115,8 @@ options:
  - Easy to use
  - Possible error diagnoser
  - 77 Website templates
- - Concurrent 3 tunneling (Cloudflared, Loclx and LocalHostRun)
- - Upto 6 links for phishing
+ - Concurrent 4 tunneling (Cloudflared, Loclx and LocalHostRun, Serveo)
+ - Upto 8 links for phishing
  - OTP Support
  - Argument support
  - Credentials mailing
