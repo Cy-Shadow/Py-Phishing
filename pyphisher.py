@@ -109,7 +109,7 @@ bcyan="\033[1;36m"
 white="\033[0;37m"
 nc="\033[00m"
 
-version="2.1.5"
+version="2.1.6"
 
 # Regular Snippets
 ask  =     f"{green}[{white}?{green}] {yellow}"
@@ -742,6 +742,9 @@ def write_redirect():
             redirect_url = url
         if redirect_url is None or redirect_url == "":
             redirect_url = redir_url
+            sed("redirectUrl", redirect_url, f"{site_dir}/login.php")
+            break
+        else:
             sed("redirectUrl", redirect_url, f"{site_dir}/login.php")
             break
         if redirect_url == "help":
