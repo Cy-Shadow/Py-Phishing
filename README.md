@@ -1,7 +1,7 @@
 <h1 align="center">PyPhisher</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-2.1-green?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Version-2.1.4-green?style=for-the-badge">
   <img src="https://img.shields.io/github/stars/KasRoudra/pyphisher?style=for-the-badge&color=orange">
   <img src="https://img.shields.io/github/forks/KasRoudra/pyphisher?color=cyan&style=for-the-badge&color=purple">
   <img src="https://img.shields.io/github/watchers/KasRoudra/pyphisher?color=cyan&style=for-the-badge&color=purple">
@@ -31,13 +31,13 @@ This project is now a part of [MaxPhisher](https://github.com/KasRoudra/MaxPhish
 ##### Install dependencies (git, python, php ssh)
 
  - For Debian (Ubuntu, Kali-Linux, Parrot)
-    - ```sudo apt install git python3 php openssh-client -y```
+    - ```sudo apt install git python3 python3-pip php openssh-client -y```
  - For Arch (Manjaro)
-    - ```sudo pacman -S git python3 php openssh --noconfirm```
+    - ```sudo pacman -S git python3 python-pip php openssh --noconfirm```
  - For Redhat(Fedora)
     - ```sudo dnf install git python3 php openssh -y```
  - For Termux
-    - ```pkg install git python3 php openssh -y```
+    - ```pkg install git python3 python-pip php openssh -y```
 
 ##### Clone this repository
 
@@ -115,8 +115,8 @@ options:
  - Easy to use
  - Possible error diagnoser
  - 77 Website templates
- - Concurrent 3 tunneling (Cloudflared, Loclx and LocalHostRun)
- - Upto 6 links for phishing
+ - Concurrent 4 tunneling (Cloudflared, Loclx and LocalHostRun, Serveo)
+ - Upto 8 links for phishing
  - OTP Support
  - Argument support
  - Credentials mailing
@@ -137,6 +137,7 @@ options:
  - `Python(3)`
    - `requests`
    - `rich`
+   - `beautifulsoup4`
  - `PHP`
  - `SSH`
  - 900MB storage
