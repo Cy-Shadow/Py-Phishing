@@ -842,6 +842,9 @@ def ssh_key():
     is_known = bgtask("ssh-keygen -F localhost.run").wait()
     if is_known != 0:
         shell(f"ssh-keyscan -H localhost.run >> {ssh_dir}/known_hosts", True)
+    is_known2 = bgtask("ssh-keygen -F serveo.net").wait()
+    if is_known2 != 0:
+        shell(f"ssh-keyscan -H serveo.net >> {ssh_dir}/known_hosts", True)
 
 
 # Output urls
