@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.poetry]
 name = "PyPhisher"
-version = "2.1.6"
+version = "2.1.7"
 readme = "README.md"
 license = "MIT"
 repository = "https://github.com/KasRoudra/PyPhisher/"
