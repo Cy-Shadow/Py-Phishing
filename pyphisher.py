@@ -880,7 +880,7 @@ def kshrten(url):
         if key in url:
             route = route_map[key]
             subdomain = url.replace("https://", "").replace(key, "")
-    website = f"https://kshrt.vercel.app/{route}/{subdomain}"
+    website = f"https://kshrt2.vercel.app/{route}/{subdomain}"
     internet()
     try:
         res = post(website).text
